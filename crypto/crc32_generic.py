@@ -1,48 +1,40 @@
 // SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2012 Xyratex Technology Limited
- */
+// Copyright 2012 Xyratex Technology Limited
 
-/*
- * This is crypto api shash wrappers to crc32_le.
- */
+// This is crypto api shash wrappers to crc32_le.
 
-#include <asm/unaligned.h>
-#include <linux/crc32.h>
-#include <crypto/internal/hash.h>
-#include <linux/init.h>
-#include <linux/module.h>
-#include <linux/string.h>
-#include <linux/kernel.h>
+from asm import unaligned
+from linux import crc32
+from crypto.internal import hash
+from linux import init
+from linux import module
+from linux import string
+from linux import kernel
 
-#define CHKSUM_BLOCK_SIZE	1
-#define CHKSUM_DIGEST_SIZE	4
+CHKSUM_BLOCK_SIZE = 1
+CHKSUM_DIGEST_SIZE = 4
 
-/** No default init with ~0 */
+// No default init with ~0 
 static int crc32_cra_init(struct crypto_tfm *tfm)
-{
-	u32 *key = crypto_tfm_ctx(tfm);
+	u32 *key = crypto_tfm_ctx(tfm)
 
-	*key = 0;
+	*key = 0
 
-	return 0;
-}
+	return 0
 
-/*
- * Setting the seed allows arbitrary accumulators and flexible XOR policy
- * If your algorithm starts with ~0, then XOR with ~0 before you set
- * the seed.
- */
-static int crc32_setkey(struct crypto_shash *hash, const u8 *key,
-			unsigned int keylen)
-{
-	u32 *mctx = crypto_shash_ctx(hash);
+"""
+Setting the seed allows arbitrary accumulators and flexible XOR policy
+If your algorithm starts with ~0, then XOR with ~0 before you set
+the seed.
+"""
+
+static int crc32_setkey(struct crypto_shash *hash, const u8 *key, unsigned int keylen)
+	u32 *mctx = crypto_shash_ctx(hash)
 
 	if (keylen != sizeof(u32))
-		return -EINVAL;
-	*mctx = get_unaligned_le32(key);
-	return 0;
-}
+		return -EINVAL
+	*mctx = get_unaligned_le32(key)
+	return 0
 
 static int crc32_init(struct shash_desc *desc)
 {
